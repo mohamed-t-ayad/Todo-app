@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import { TodoProvider } from "./context/TodoContext.jsx";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 // ✅ 1. Third-party CSS libraries first (Bootstrap, Tailwind, etc.)
 import "bootstrap/dist/css/bootstrap.min.css"; 
 
