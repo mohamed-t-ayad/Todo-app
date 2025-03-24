@@ -5,16 +5,16 @@ import Home from "./pages/Home";
 import Completed from "./pages/Completed";
 import Settings from "./pages/Settings";
 import { ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-// import "bootstrap/dist/css/bootstrap.min.css"
+
 
 function App() {
   // const { todos , setTodos } = useTodo();
   return (
     
     <div>
-      <ToastContainer position="top-right" autoClose={3000} />
+      
       <Router>
+        <ToastContainer position="top-right" autoClose={3000} />
         <Navbar />
         <div className="container">
           <Routes>

@@ -1,59 +1,82 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+
 const TodoContext = createContext();
 
 export const TodoProvider = ({ children }) => {
   // retive saved todos from local storage
-  const [todos, setTodos] = useState( () => {
+  const [todos, setTodos] = useState(() => {
     const savedTodos = localStorage.getItem("todos");
     return savedTodos ? JSON.parse(savedTodos) : [];
   });
-  
-  // const [ filter , setFilter] = useState("all"); // add filter state
 
   // update local storage when todos change
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
-  
 
-    // Add To do item
-    const addTodo = (text) => {
-        // setTodos ([...todos , {id: Date.now() , text , completed: false}])
-        setTodos((prevTodos) => [...prevTodos, { id: Date.now(), text, completed
-            : false }]);
-        toast.success("Task Added Successfully");
+
+
+  // ✅ Store isAlertEnabled in state
+  const [isAlertsEnabled, setIsAlertsEnabled] = useState(() => {
+    return JSON.parse(localStorage.getItem("isAlertEnabled")) ?? true;
+  });
+  // ✅ Sync alerts setting with localStorage
+  useEffect(() => {
+    localStorage.setItem("isAlertEnabled", JSON.stringify(isAlertsEnabled));
+  }, [isAlertsEnabled]);
+  // handel alerts
+  const showAlert = (message, type) => {
+    // const isAlertEnabled = JSON.parse(localStorage.getItem("isAlertEnabled")) ?? true;
+    if (!isAlertsEnabled) return;
+
+    if (type === "success") {
+      toast.success(message);
+    } else if (type === "error") {
+      toast.error(message);
+    } else if (type === "info") {
+      toast.info(message);
     }
-    // Toggle Completed
-    const toggleCompleted = (id) => {
-        setTodos((prevTodos) =>
-          prevTodos.map(todo => 
-                todo.id === id ? { ...todo, completed : !todo.completed } : todo
-            )
-        );
-        toast.info("Task Updated Successfully");
-    };
+  };
 
-    // Delete Todo
-    const deleteTodo = (id) => {
-        setTodos(todos.filter(todo => todo.id !== id));
-        toast.error("Task Deleted Successfully");
-    };
+  // Add To do item
+  const addTodo = (text) => {
+    // setTodos ([...todos , {id: Date.now() , text , completed: false}])
+    setTodos((prevTodos) => [
+      ...prevTodos,
+      { id: Date.now(), text, completed: false },
+    ]);
+    showAlert("✅ Task Added Successfully", "success");
+  };
+  // Toggle Completed
+  const toggleCompleted = (id) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+    showAlert("✔️ Task Updated Successfully", "info");
+  };
 
-    // function retuen fillterd Todos
-    // const filteredTodos = todos.filter(todo => {
-    //   if (filter === "active") {
-    //     return !todo.completed;
-    //   } else if (filter === "completed") {
-    //     return todo.completed;
-    //   } else {
-    //     return true;
-    //   }
-    // })
+  // Delete Todo
+  const deleteTodo = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+    showAlert("🗑️ Task Deleted Successfully", "error");
+  };
 
   return (
-    <TodoContext.Provider value={{ todos, addTodo, toggleCompleted, deleteTodo  }}>
+    <TodoContext.Provider
+      value={{
+        todos,
+        addTodo,
+        toggleCompleted,
+        deleteTodo,
+        isAlertsEnabled,
+        setIsAlertsEnabled,
+      }}
+    >
       {children}
     </TodoContext.Provider>
   );
